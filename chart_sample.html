@@ -1,0 +1,120 @@
+	
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@0.7.0"></script>
+
+    <script type="text/javascript">
+
+	
+
+	class chart_class{
+
+		test;
+		constructor(type, title, categories, data_vals, colors) {
+
+			this.type = type;
+			this.title = title;
+			this.categories = categories;
+			this.data_vals = data_vals;
+			this.colors = colors;			
+		}	
+
+
+		render() {
+
+		    var xValues = this.categories;
+		    var yValues = this.data_vals;
+		    var barColors = this.colors;
+
+		    var ctx = document.getElementById("myChart").getContext('2d');
+
+		    var myChart = new Chart(ctx, {
+		        type: this.type,
+		        data: {
+		            labels: xValues,
+		            datasets: [{
+		                backgroundColor: barColors,
+		                data: yValues,
+		                datalabels: {
+		                    anchor: 'end',
+		                    align: 'end'
+		                }
+		            }]
+		        },
+		        options: {
+		            responsive: true,
+		            legend: {		            	
+		                position: "right",
+		                align: "middle"
+		            },
+
+		            layout: {
+
+		                padding: 32
+		            },
+		            tooltips: {
+		            	//
+					    callbacks: {
+					      label: function(tooltipItem, data) {
+					        var dataset = data.datasets[tooltipItem.datasetIndex];
+					        var meta = dataset._meta[Object.keys(dataset._meta)[0]];
+					        var total = meta.total;
+					        var currentValue = Number(dataset.data[tooltipItem.index]);
+					        var val = currentValue.toLocaleString('en-US');
+					        var percentage = parseFloat((currentValue/total*100).toFixed(2));
+					        return '  $' + val + ' (' + percentage + '%)';
+					      },
+
+					      title: function(tooltipItem, data) {
+					        return data.labels[tooltipItem[0].index];
+					      }
+					    }
+					  },
+					  //
+		            plugins: {
+		                datalabels: {
+		                	
+		                	anchor: 'end',
+							align: 'end',
+							offset: 20,
+		                	formatter: (value, ctx) => {
+		                        var sum = ctx.dataset._meta[0].total;
+		                        var percentage = (value * 100 / sum).toFixed(2);
+		                        var txt="";
+		                        if(percentage > 2){
+		                        	txt = percentage + "%";
+		                        }
+
+		                        return txt;
+		                    },
+		                    color: this.colors,		                    
+		                    font: {
+		                        size: 12
+		                    },
+		                },
+		            },		            
+		        }
+		    });
+
+		}
+	}
+
+</script>
+<canvas id="myChart" style="width:100%;max-width:900px"></canvas>
+<script>
+	var xVals = 
+[["name1"],["name2"],["name3"]];
+	var yVals = 
+[["1275"],["7301"],["8492"]];
+
+	var barColors = [
+
+			  "rgb(239,109,47)",
+			  "rgb(90,90,90)",
+			  "rgb(33,117,187)"
+			];
+
+	var chartt = new chart_class('pie','title',xVals, yVals, barColors);
+
+	chartt.render();
+</script>
